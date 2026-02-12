@@ -1,0 +1,9 @@
+# Common ignores
+*.log
+*.tmp
+.DS_Store
+data/raw/*
+data/processed/*
+todos/
+docs/
+data/
