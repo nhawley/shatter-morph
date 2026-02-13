@@ -7,6 +7,9 @@ import * as THREE from 'three';
 function Enemy({ enemy }: { enemy: any }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const player = useGameStore((state: any) => state.player);
+  const isDead = useGameStore((state: any) => state.isDead);
+  const isPaused = useGameStore((state: any) => state.isPaused);
+  const isManuallyPaused = useGameStore((state: any) => state.isManuallyPaused);
   const removeEnemy = useGameStore((state: any) => state.removeEnemy);
   const damagePlayer = useGameStore((state: any) => state.damagePlayer);
   
@@ -15,7 +18,7 @@ function Enemy({ enemy }: { enemy: any }) {
   
   // Simple AI: Move toward player
   useFrame(() => {
-    if (meshRef.current) {
+    if (meshRef.current && !isDead && !isPaused && !isManuallyPaused) {
       const dx = player.x - enemy.x;
       const dy = player.y - enemy.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
@@ -32,6 +35,12 @@ function Enemy({ enemy }: { enemy: any }) {
         if (!enemy.lastAttack || Date.now() - enemy.lastAttack > 1000) {
           damagePlayer(enemyData.damage);
           enemy.lastAttack = Date.now();
+          
+          // Reset enemy position after attacking
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 8;
+          enemy.x = Math.cos(angle) * distance;
+          enemy.y = Math.sin(angle) * distance;
         }
       }
       

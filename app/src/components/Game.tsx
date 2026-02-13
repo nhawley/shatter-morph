@@ -3,20 +3,30 @@ import { Canvas } from '@react-three/fiber';
 import { View, StyleSheet } from 'react-native';
 import Player from './Player';
 import Enemy from './Enemy';
+import Particle from './Particle';
 import Controls from './Controls';
 import FormSelector from './FormSelector';
+import GameOver from './GameOver';
+import PauseOverlay from './PauseOverlay';
+import PauseScreen from './PauseScreen';
 import useGameStore from '../store/gameStore';
 import { ENEMY_TYPES } from '../data/forms';
 
 export default function Game() {
   // Add at the top of Game component
   const spawnEnemy = useGameStore((state: any) => state.spawnEnemy);
-  const MAX_ENEMIES = 10;
+  const enemies = useGameStore((state: any) => state.enemies);
+  const cores = useGameStore((state: any) => state.cores);
+  const particles = useGameStore((state: any) => state.particles);
+  const isDead = useGameStore((state: any) => state.isDead);
+  const isPaused = useGameStore((state: any) => state.isPaused);
+  const isManuallyPaused = useGameStore((state: any) => state.isManuallyPaused);
+  const MAX_ENEMIES = 5;
 
   useEffect(() => {
-    // Spawn 10 enemies periodically
+    // Spawn 5 enemies periodically
     const interval = setInterval(() => {
-      if (enemies.length < MAX_ENEMIES) {
+      if (enemies.length < MAX_ENEMIES && !isDead && !isPaused && !isManuallyPaused) {
         const types = Object.keys(ENEMY_TYPES);
         const randomType = types[Math.floor(Math.random() * types.length)];
         
@@ -32,10 +42,7 @@ export default function Game() {
     }, 3000);
     
     return () => clearInterval(interval);
-  }, []);
-
-  const enemies = useGameStore((state: any) => state.enemies);
-  const cores = useGameStore((state: any) => state.cores);
+  }, [enemies.length, isDead, isPaused, isManuallyPaused]);
 
   return (
     <View style={styles.container}>
@@ -62,6 +69,11 @@ export default function Game() {
             <Enemy key={enemy.id} enemy={enemy} />
           ))}
           
+          {/* Particles */}
+          {particles.map((particle) => (
+            <Particle key={particle.id} particle={particle} />
+          ))}
+          
           {/* Morphic Cores */}
           {cores.map((core) => (
             <mesh key={core.id} position={[core.x, 0.5, core.y]}>
@@ -79,6 +91,15 @@ export default function Game() {
       {/* UI Overlay */}
       <Controls />
       <FormSelector />
+      
+      {/* Pause Overlay for core selection */}
+      {isPaused && !isDead && !isManuallyPaused && <PauseOverlay />}
+      
+      {/* Manual Pause Screen */}
+      {isManuallyPaused && !isDead && <PauseScreen />}
+      
+      {/* Game Over Screen */}
+      {isDead && <GameOver />}
     </View>
   );
 }

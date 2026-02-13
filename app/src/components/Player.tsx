@@ -61,21 +61,6 @@ export default function Player() {
           roughness={0.3}
         />
       </mesh>
-      
-      {/* Health bar */}
-      <mesh position={[0, currentFormData.scale + 1, 0]}>
-        <boxGeometry args={[1.5, 0.1, 0.1]} />
-        <meshBasicMaterial color="#E63946" />
-      </mesh>
-      
-      <mesh position={[
-        -0.75 + (player.health / player.maxHealth) * 0.75,
-        currentFormData.scale + 1,
-        0.05
-      ]}>
-        <boxGeometry args={[(player.health / player.maxHealth) * 1.5, 0.08, 0.05]} />
-        <meshBasicMaterial color="#06FFA5" />
-      </mesh>
     </group>
   );
 }

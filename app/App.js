@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, StatusBar } from 'react-native';
 import Game from './src/components/Game';
 
 export default function App() {
   return (
     <View style={styles.container}>
+      <StatusBar hidden={true} />
       <Game />
     </View>
   );
